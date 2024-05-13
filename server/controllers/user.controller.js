@@ -41,12 +41,10 @@ const loginUser = asyncHandler(async (req, res) => {
     // }
 
     const existingUser = await User.findOne({ email: email })
-    console.log(existingUser)
 
     if (existingUser) {
 
         const isPasswordValid = await existingUser.matchPassowrd(password)
-        console.log(isPasswordValid)
         if (isPasswordValid) {
             generateToken(res, existingUser._id)
 
@@ -83,7 +81,6 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
     const user = await User.findById(req.user._id)
     const { password: _, ...newUser } = user._doc
-    console.log(user)
     if (!user) {
         res.status(404)
         throw new Error("User Not Found")
@@ -94,6 +91,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 
 const updateUserProfile = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id)
+    console.log("user from update Profile", user)
 
     if (user) {
         user.username = req.body.username || user.username

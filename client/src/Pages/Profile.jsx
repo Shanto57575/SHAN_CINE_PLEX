@@ -5,47 +5,39 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import {
-	registrationStart,
-	registrationSuccess,
-	registrationFailed,
+	updateStart,
+	updateSuccess,
+	updateFailed,
 } from "../app/features/users/userSlice";
-import cinema from "../assets/cinema.png";
 import { useDispatch, useSelector } from "react-redux";
 
-const Regsiter = () => {
-	const navigate = useNavigate();
+const Profile = () => {
 	const [error, setError] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const dispatch = useDispatch();
-	const { loading } = useSelector((state) => state.user);
+	const { userInfo, loading } = useSelector((state) => state.user);
 
 	const togglePassword = () => {
 		setShowPassword(!showPassword);
 	};
 
-	const {
-		register,
-		handleSubmit,
-		reset,
-		formState: { errors },
-	} = useForm();
+	const { handleSubmit, register } = useForm();
 
 	const onSubmit = async (userData) => {
+		console.log(userData);
 		try {
-			dispatch(registrationStart());
-			const response = await axios.post("/api/v1/users/register", userData);
+			dispatch(updateStart());
+			const response = await axios.put("/api/v1/users/profile", userData);
 			const userInfo = await response.data;
-			console.log(userInfo);
-			toast.success("Signed Up Successfully!");
-			dispatch(registrationSuccess(userInfo.user));
+			console.log("userInfo-->", userInfo);
+			toast.success("userData Updated Successfully!");
+			dispatch(updateSuccess(userInfo.user));
 			setError("");
-			reset();
-			navigate("/login");
 		} catch (error) {
 			const errorMessage = error.response.data.message || "Registration Failed";
 			setError(errorMessage);
 			toast.error(errorMessage);
-			dispatch(registrationFailed({ error: errorMessage }));
+			dispatch(updateFailed({ error: errorMessage }));
 		}
 	};
 
@@ -53,7 +45,7 @@ const Regsiter = () => {
 		<div className="flex items-center justify-center bg-gradient-to-r from-purple-300 via-slate-900 to-gray-800 h-screen">
 			<div className="w-full max-w-xs">
 				<h1 className="text-white text-center mb-2 text-2xl font-bold">
-					Sign Up
+					My Profile
 				</h1>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
@@ -64,80 +56,44 @@ const Regsiter = () => {
 							className="block text-gray-50 text-sm font-bold mb-2"
 							htmlFor="username"
 						>
-							*Username
+							Username
 						</label>
 						<input
-							{...register("username", {
-								required: "Username is required",
-								maxLength: {
-									value: 20,
-									message: "Username should not exceed 20 characters",
-								},
-							})}
+							defaultValue={userInfo?.username}
+							{...register("username")}
 							className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
 							id="username"
 							type="text"
 							placeholder="Username"
 						/>
-						{errors.username && (
-							<span className="text-rose-600 my-1.5">
-								{errors.username.message}
-							</span>
-						)}
 					</div>
 					<div className="mb-4">
 						<label
 							className="block text-gray-50 text-sm font-bold mb-2"
 							htmlFor="email"
 						>
-							*Email
+							Email
 						</label>
 						<input
-							{...register("email", {
-								pattern: {
-									value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-									message: "Invalid email address",
-								},
-								required: "Email is required",
-							})}
+							defaultValue={userInfo?.email}
+							{...register("email")}
 							className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
 							id="email"
 							type="email"
 							placeholder="Email"
 						/>
-						{errors.email && (
-							<span className="text-rose-600 my-1.5">
-								{errors.email.message}
-							</span>
-						)}
 					</div>
 					<div className="relative mb-6">
 						<label
 							className="block text-gray-50 text-sm font-bold mb-2"
 							htmlFor="password"
 						>
-							*Password
+							Password
 						</label>
 						<input
-							{...register("password", {
-								required: "Password is required",
-								minLength: {
-									value: 6,
-									message: "Password should be at least 6 characters long",
-								},
-								maxLength: {
-									value: 15,
-									message: "Password should not exceed 15 characters",
-								},
-								pattern: {
-									value:
-										/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+}{"':;?/>.<,])(?!.*\s).{6,15}$/,
-									message:
-										"Password should contain:\n at least one uppercase letter\n, one lowercase letter\n, one number\n, one special character\n, and no spaces",
-								},
-							})}
 							className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
 							id="password"
+							{...register("password")}
 							type={showPassword ? "text" : "password"}
 							placeholder="*********"
 						/>
@@ -153,11 +109,6 @@ const Regsiter = () => {
 								className="absolute top-0.5 right-2 mt-8 text-gray-700 cursor-pointer"
 								size="25"
 							/>
-						)}
-						{errors.password && (
-							<span className="text-rose-600 my-1.5">
-								{errors.password.message}
-							</span>
 						)}
 					</div>
 					<section className="text-center">
@@ -198,4 +149,4 @@ const Regsiter = () => {
 	);
 };
 
-export default Regsiter;
+export default Profile;

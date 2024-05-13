@@ -2,10 +2,24 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { IoIosEye, IoIosEyeOff } from "react-icons/io";
+import {
+	loginStart,
+	loginSuccess,
+	loginFailed,
+} from "../app/features/users/userSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
+	const navigate = useNavigate();
 	const [error, setError] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
+	const dispatch = useDispatch();
+
+	const togglePassword = () => {
+		setShowPassword(!showPassword);
+	};
 
 	const {
 		register,
@@ -16,15 +30,20 @@ const Login = () => {
 
 	const onSubmit = async (userData) => {
 		try {
+			dispatch(loginStart());
 			const response = await axios.post("/api/v1/users/login", userData);
 			const userInfo = await response.data;
 			console.log(userInfo);
+			dispatch(loginSuccess(userInfo.user));
 			toast.success("Signed In Successfully!");
 			setError("");
 			reset();
+			navigate("/");
 		} catch (error) {
-			setError(error.response.data.message);
-			toast.error(error.response.data.message);
+			const errorMessage = error.response.data.message || "Login Failed";
+			setError(errorMessage);
+			toast.error(errorMessage);
+			dispatch(registrationFailed({ error: errorMessage }));
 		}
 	};
 
@@ -36,7 +55,7 @@ const Login = () => {
 				</h1>
 				<form
 					onSubmit={handleSubmit(onSubmit)}
-					className="shadow-md bg-slate-950 shadow-white rounded px-10 pb-8 pt-12 mb-4 my-auto"
+					className="bg-slate-950 rounded px-10 pb-8 pt-12 mb-4 my-auto hover:border-2 border-purple-200 shadow-lg shadow-gray-500"
 				>
 					<div className="mb-4">
 						<label
@@ -56,7 +75,7 @@ const Login = () => {
 							<span className="text-red-600 my-1.5">Email is required</span>
 						)}
 					</div>
-					<div className="mb-6">
+					<div className="relative mb-6">
 						<label
 							className="block text-gray-50 text-sm font-bold mb-2"
 							htmlFor="password"
@@ -67,9 +86,22 @@ const Login = () => {
 							{...register("password", { required: true })}
 							className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
 							id="password"
-							type="password"
+							type={showPassword ? "text" : "password"}
 							placeholder="*********"
 						/>
+						{showPassword ? (
+							<IoIosEye
+								onClick={togglePassword}
+								className="absolute top-0.5 right-2 mt-8 text-gray-700 cursor-pointer"
+								size="25"
+							/>
+						) : (
+							<IoIosEyeOff
+								onClick={togglePassword}
+								className="absolute top-0.5 right-2 mt-8 text-gray-700 cursor-pointer"
+								size="25"
+							/>
+						)}
 						{errors.password && (
 							<span className="text-red-600 my-1.5">password is required</span>
 						)}

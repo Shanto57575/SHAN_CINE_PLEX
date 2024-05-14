@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser';
 import userRoutes from '../routes/user.routes.js';
 import { errorHandler, notFound } from '../middlewares/errorHandler.js';
+import genreRoutes from '../routes/genre.routes.js';
 dotenv.config()
 
 const port = process.env.PORT || 5000
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 })
 
 app.use("/api/v1/users", userRoutes)
+app.use("/api/v1/genres", genreRoutes)
 
 app.use(notFound)
 app.use(errorHandler)

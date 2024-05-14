@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IoIosEye, IoIosEyeOff } from "react-icons/io";
 import {
 	loginStart,
@@ -12,10 +12,12 @@ import {
 import { useDispatch } from "react-redux";
 
 const Login = () => {
-	const navigate = useNavigate();
 	const [error, setError] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const dispatch = useDispatch();
+	const location = useLocation();
+	const navigate = useNavigate();
+	console.log(location.pathname);
 
 	const togglePassword = () => {
 		setShowPassword(!showPassword);
@@ -38,12 +40,12 @@ const Login = () => {
 			toast.success("Signed In Successfully!");
 			setError("");
 			reset();
-			navigate("/");
+			navigate(`/profile`);
 		} catch (error) {
 			const errorMessage = error.response.data.message || "Login Failed";
 			setError(errorMessage);
 			toast.error(errorMessage);
-			dispatch(registrationFailed({ error: errorMessage }));
+			dispatch(loginFailed({ error: errorMessage }));
 		}
 	};
 

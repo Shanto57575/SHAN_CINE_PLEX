@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import {  useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -50,7 +50,7 @@ const Regsiter = () => {
 	};
 
 	return (
-		<div className="flex items-center justify-center bg-gradient-to-r from-purple-300 via-slate-900 to-gray-800 h-screen">
+		<div className="flex items-center justify-center bg-gradient-to-r from-purple-300 via-slate-700 to-gray-800 h-screen">
 			<div className="w-full max-w-xs">
 				<h1 className="text-white text-center mb-2 text-2xl font-bold">
 					Sign Up
